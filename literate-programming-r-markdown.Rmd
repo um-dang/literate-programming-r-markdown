@@ -1,0 +1,139 @@
+---
+title: 'Literate Programming: Creating reproducible reports using R Markdown'
+author: "Zena Lapp"
+date: "4/20/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro
+- How do you usually share data analyses with your collaborators? Many people share them through Word document, spreadsheets, attachments, etc.
+- In R Markdown, you can incorporate ordinary text (ex. experimental methods, analysis and discussion of results) alongside code and figures! (Some people write entire manuscripts in R Markdown.)
+- This is useful for writing reproducible analysis reports, publication, sharing work with collaborators, writing up homework, and keeping a bioinformatics notebook.
+- Because the code is emedded in the document, the figures are *reproducible*.
+- If you find an error or want to add more to the report, you can just re-run the document and you'll have updated figures!
+- This concept of combining text and code is called "literate programming".
+- To do this we use R Markdown - combines Markdown (renders plain text) with R.
+
+# Creating an R Markdown file
+- Open RStudio
+- File &rarr; New File &rarr; R Markdown
+- Give your document a title
+- Keep default output format as HTML. You need TeX installed if you want to generate PDF documents.
+- R Markdown files always end in `.Rmd`
+
+# Basic components of R Markdown
+- Header: instructions for R to specify type of document to be created and options to choose (ex. title, author, date)
+    - Key-value pairs
+    - At start of file
+    - Between lines of `---`  
+
+```
+---
+title: 'Literate Programming: Creating reproducible reports using R Markdown'
+author: "Zena Lapp"
+date: "4/20/2019"
+output: html_document
+---
+```
+- Setup (technically R code): sets up options for all code chunks (ex. show code in output file)
+- Text: narration formatted with markdown 
+- Code chunks: embedded code
+```{r,comment=NA,echo=F,collapse=T}
+cat('```{r}\n# Your code here\n```')
+# cat('# Your code here')
+# cat('```')
+```
+
+- R Markdown uses the location of the `.Rmd` file as the working directory (where you are on your computer)
+
+# Markdown
+
+## Text formatting and bullet points
+- Bold text with double asterisks **like this**
+- Italicize text with underscores _like this_
+- Add code-type font with backticks `like this`
+- Make a list using dashes (`-`) or asterisks (`*`)
+- You can make a nubmered list using `1.` for each thing in your list (like the example below)
+
+## Lists
+Steps to generate an R Markdown file:
+
+1. Open a .Rmd file in RStudio
+1. Write text and code
+1. Compile using Knit!
+
+## Hyperlinks to useful information about R markdown
+- You can make a hyperlink to a website like this: `[text to show](http://the-web-page.com)`.
+
+- [Here](https://www.markdownguide.org) is a useful website on markdown
+- [Here](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf) is a useful R Markdown cheat sheet
+- [Here](https://swcarpentry.github.io/r-novice-gapminder/15-knitr-markdown/) is the Software Carpentry lesson on R Markdown
+
+## Including images
+- You can include an image file like this: `![caption](http://url/for/file)`
+
+![**Figure 1:** World map](https://upload.wikimedia.org/wikipedia/commons/e/e2/OrteliusWorldMap1570.jpg)
+
+## Subscripts and superscripts
+- Subscript: F~2~ 
+- Superscript: F^2^
+
+## Math
+You can use `$ $` and `$$ $$` to insert mat equations. Here is an inline example: $E = mc^2$. Here is a block example: $$y = \mu + \sum_{i=1}^p \beta_i x_i + \epsilon$$
+
+# R code chunks and inline code
+Output of code will be embedded in the document.
+
+```{r function}
+hist_rnorm = function(n){
+  nums = rnorm(n)
+  hist(nums)
+  return(nums)
+}
+```
+
+```{r n10,echo=T}
+set.seed(0)
+n = 10
+nums = hist_rnorm(n)
+```
+
+Here I generated `r n` random numbers from a $N(\mu=0,\sigma=1)$ distribution. The mean of the random numbers is `r mean(nums)`. The histogram also doesn't look like a normal distribution. It seems like I need a larger sample size to get a good estimate of the mean for this distribution. 
+
+```{r n100,echo=T}
+n = 1000
+nums = hist_rnorm(n)
+```
+
+Next I generated `r n` random numbers from the same distribution. The mean is `r mean(nums)`, which is much closer to zero, and the histogram looks much more normal.
+
+# To compile
+- Click "Knit" at the top!
+- R code is executed and output document is produced!
+
+# Exercise
+- Create a new R Markdown document
+- Everything except the header
+- At the top, summarize what you did today using Markdown syntax
+_ Use a built-in dataset to make a plot: `data()` to check out what datasets are available.
+- OR download the gapminder data:
+
+```{r}
+gapminder = read.csv("https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_data.csv")
+```
+
+- Plot gdp per capita vs. life expectancy
+```{r}
+plot(gapminder$gdpPercap, gapminder$lifeExp)
+```
+
+- Plot life expectancy by continent 
+
+```{r, life_exp,warning=F}
+library(ggplot2)
+ggplot(data = gapminder, aes(x = lifeExp, fill = continent)) + geom_histogram(bins = 100) + facet_wrap(~continent)
+```
